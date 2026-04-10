@@ -10,29 +10,15 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
         body { font-family: 'Inter', sans-serif; background-color: #111b21; }
-        
-        /* WhatsApp/Claude Style Scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-thumb { background: #374151; border-radius: 10px; }
-        
-        /* Chat Bubble Styles */
         .bubble { position: relative; max-width: 85%; padding: 10px 14px; border-radius: 12px; font-size: 15px; line-height: 1.5; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .bubble.user { background-color: #dcf8c6; color: #111b21; border-top-right-radius: 2px; }
         .bubble.ai { background-color: #ffffff; color: #111b21; border-top-left-radius: 2px; }
-        .bubble.ai h1, .bubble.ai h2 { font-weight: bold; margin-top: 8px; }
-        
-        /* Sidebar Active State */
         .sidebar-item.active { background-color: #2a3942; border-left: 4px solid #3b82f6; }
-        
-        /* Typing Animation */
         .typing-dot { width: 6px; height: 6px; background: #94a3b8; border-radius: 50%; animation: bounce 1.4s infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-
-        /* Mobile View Fixes */
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; position: absolute; z-index: 50; height: 100%; }
-            .sidebar.open { transform: translateX(0); }
-        }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); transition: transform 0.3s ease; position: absolute; z-index: 50; height: 100%; } .sidebar.open { transform: translateX(0); } }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden text-slate-200">
@@ -45,16 +31,12 @@
             </div>
             <button onclick="toggleSidebar()" class="md:hidden text-slate-400"><i class="fa-solid fa-xmark"></i></button>
         </div>
-        
         <div class="p-3">
             <button onclick="createNewChat()" class="w-full bg-[#202c33] hover:bg-[#2a3942] py-2.5 rounded-lg border border-slate-700 flex items-center justify-center gap-2 transition-all">
                 <i class="fa-solid fa-plus-circle"></i> New Chat
             </button>
         </div>
-
-        <div id="history-list" class="flex-1 overflow-y-auto px-2 space-y-1">
-            </div>
-
+        <div id="history-list" class="flex-1 overflow-y-auto px-2 space-y-1"></div>
         <div class="p-4 bg-[#202c33] border-t border-slate-800 space-y-2">
             <button onclick="openSettings()" class="w-full text-xs text-slate-400 hover:text-white flex items-center gap-2 transition">
                 <i class="fa-solid fa-gear"></i> Settings (API & Model)
@@ -66,26 +48,16 @@
         <header class="bg-white border-b px-4 py-3 flex justify-between items-center shadow-sm z-10">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="md:hidden text-slate-600 mr-2"><i class="fa-solid fa-bars text-xl"></i></button>
-                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white">
-                    <i class="fa-solid fa-robot"></i>
-                </div>
+                <div class="w-10 h-10 bg-blue-600 rounded-full flex items-center justify-center text-white"><i class="fa-solid fa-robot"></i></div>
                 <div>
                     <h1 id="chat-title" class="font-bold text-slate-800 text-sm">Pocket Guru AI</h1>
-                    <div class="flex items-center gap-1">
-                        <span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                        <span class="text-[10px] text-green-600 font-bold uppercase">Online</span>
-                    </div>
+                    <div class="flex items-center gap-1"><span class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span><span class="text-[10px] text-green-600 font-bold uppercase">Online</span></div>
                 </div>
             </div>
-            <div class="flex gap-2">
-                <button onclick="clearCurrentChat()" class="text-[10px] px-3 py-1.5 rounded-full border border-slate-200 text-slate-500 hover:bg-red-50 hover:text-red-600 transition font-bold uppercase">
-                    <i class="fa-solid fa-trash-can mr-1"></i> Clear
-                </button>
-            </div>
+            <button onclick="clearCurrentChat()" class="text-[10px] px-3 py-1.5 rounded-full border border-slate-200 text-slate-500 hover:bg-red-50 hover:text-red-600 transition font-bold uppercase">CLEAR</button>
         </header>
 
-        <div id="chat-box" class="flex-1 overflow-y-auto p-4 md:px-20 lg:px-40 flex flex-col gap-4">
-            </div>
+        <div id="chat-box" class="flex-1 overflow-y-auto p-4 md:px-20 lg:px-40 flex flex-col gap-4"></div>
 
         <div id="typing-indicator" class="hidden px-4 md:px-20 lg:px-40 pb-2">
             <div class="bg-white px-4 py-2 rounded-full border shadow-sm flex gap-1 w-max items-center">
@@ -98,42 +70,36 @@
         <div class="bg-white/80 backdrop-blur-md border-t p-4 pb-6">
             <div class="max-w-4xl mx-auto flex items-end gap-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-2">
                 <textarea id="user-input" rows="1" class="flex-1 py-2 px-3 outline-none resize-none text-slate-800 text-sm" placeholder="पूछो बेटा, क्या सीखना है?"></textarea>
-                <button id="send-btn" class="bg-blue-600 text-white w-10 h-10 rounded-xl hover:bg-blue-700 flex items-center justify-center transition active:scale-95 shadow-lg shadow-blue-200">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
+                <button id="send-btn" class="bg-blue-600 text-white w-10 h-10 rounded-xl hover:bg-blue-700 flex items-center justify-center transition shadow-lg shadow-blue-200"><i class="fa-solid fa-paper-plane"></i></button>
             </div>
-            <p class="text-center text-[10px] text-slate-400 mt-2">Study well Beta! Pocket Guru is here to help.</p>
         </div>
     </main>
 
     <div id="settings-modal" class="hidden fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-md p-6 shadow-2xl">
-            <h2 class="text-xl font-bold text-slate-800 mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-sliders text-blue-600"></i> Settings
-            </h2>
+            <h2 class="text-xl font-bold text-slate-800 mb-4">Settings</h2>
             <div class="space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">OPENROUTER API KEY</label>
-                    <input type="password" id="api-key-input" class="w-full border rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500" placeholder="sk-or-v1-...">
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">API Key</label>
+                    <input type="password" id="api-key-input" class="w-full border rounded-lg px-3 py-2 text-sm text-slate-800 outline-none focus:border-blue-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 mb-1">AI MODEL</label>
+                    <label class="block text-xs font-bold text-slate-500 mb-1 uppercase">Model</label>
                     <select id="model-select" class="w-full border rounded-lg px-3 py-2 text-sm text-slate-800 outline-none bg-white">
-                        <option value="google/gemini-2.0-flash-lite-preview-02-05:free">Gemini 2.0 Flash Lite (Free)</option>
-                        <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B (Free)</option>
-                        <option value="google/gemma-2-9b-it:free">Gemma 2 9B (Free)</option>
+                        <option value="google/gemini-2.0-flash-lite-preview-02-05:free">Gemini 2.0 Flash Lite (Best)</option>
+                        <option value="meta-llama/llama-3.3-70b-instruct:free">Llama 3.3 70B</option>
+                        <option value="google/gemma-2-9b-it:free">Gemma 2 9B</option>
                     </select>
                 </div>
             </div>
             <div class="mt-6 flex gap-2">
-                <button onclick="saveSettings()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold">Save Changes</button>
+                <button onclick="saveSettings()" class="flex-1 bg-blue-600 text-white py-2 rounded-lg font-bold">Save</button>
                 <button onclick="closeSettings()" class="flex-1 bg-slate-100 text-slate-600 py-2 rounded-lg font-bold">Cancel</button>
             </div>
         </div>
     </div>
 
     <script>
-        // --- CONSTANTS & STATE ---
         let API_KEY = localStorage.getItem('pg_api_key') || '';
         let ACTIVE_MODEL = localStorage.getItem('pg_model') || 'google/gemini-2.0-flash-lite-preview-02-05:free';
         let chats = JSON.parse(localStorage.getItem('pg_chats')) || {};
@@ -143,29 +109,16 @@
         const userInput = document.getElementById('user-input');
         const typingIndicator = document.getElementById('typing-indicator');
 
-        // --- INITIALIZATION ---
         function init() {
-            if (!currentChatId || !chats[currentChatId]) {
-                createNewChat();
-            }
+            if (!currentChatId || !chats[currentChatId]) createNewChat();
             renderHistory();
             renderMessages();
-            
-            // Auto-resize textarea
-            userInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = (this.scrollHeight) + 'px';
-            });
+            userInput.addEventListener('input', function() { this.style.height = 'auto'; this.style.height = (this.scrollHeight) + 'px'; });
         }
 
-        // --- CORE FUNCTIONS ---
         function createNewChat() {
             const id = 'chat_' + Date.now();
-            chats[id] = {
-                id: id,
-                title: "नयी बातचीत",
-                messages: []
-            };
+            chats[id] = { id: id, title: "नयी बातचीत", messages: [] };
             currentChatId = id;
             save();
             renderHistory();
@@ -177,74 +130,27 @@
             localStorage.setItem('pg_active_id', currentChatId);
         }
 
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('open');
-        }
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('open'); }
 
         function renderHistory() {
             const list = document.getElementById('history-list');
             list.innerHTML = '';
             Object.values(chats).reverse().forEach(chat => {
                 const div = document.createElement('div');
-                div.className = `sidebar-item p-3 rounded-lg flex justify-between items-center group cursor-pointer transition text-sm ${chat.id === currentChatId ? 'active' : 'hover:bg-[#202c33]'}`;
-                div.innerHTML = `
-                    <div class="truncate flex-1" onclick="switchChat('${chat.id}')">
-                        <i class="fa-regular fa-message mr-2 opacity-60"></i>
-                        ${chat.title}
-                    </div>
-                    <button onclick="deleteChat('${chat.id}')" class="opacity-0 group-hover:opacity-100 text-slate-500 hover:text-red-400 p-1">
-                        <i class="fa-solid fa-trash-can text-xs"></i>
-                    </button>
-                `;
+                div.className = `sidebar-item p-3 rounded-lg flex justify-between items-center group cursor-pointer text-sm ${chat.id === currentChatId ? 'active' : 'hover:bg-[#202c33]'}`;
+                div.innerHTML = `<div class="truncate flex-1" onclick="switchChat('${chat.id}')"><i class="fa-regular fa-message mr-2 opacity-60"></i>${chat.title}</div><button onclick="deleteChat('${chat.id}')" class="opacity-0 group-hover:opacity-100 p-1"><i class="fa-solid fa-trash-can text-xs"></i></button>`;
                 list.appendChild(div);
             });
         }
 
-        function switchChat(id) {
-            currentChatId = id;
-            save();
-            renderHistory();
-            renderMessages();
-            if (window.innerWidth < 768) toggleSidebar();
-        }
-
-        function deleteChat(id) {
-            delete chats[id];
-            if (currentChatId === id) {
-                createNewChat();
-            } else {
-                save();
-                renderHistory();
-            }
-        }
-
-        function clearCurrentChat() {
-            chats[currentChatId].messages = [];
-            save();
-            renderMessages();
-        }
+        function switchChat(id) { currentChatId = id; save(); renderHistory(); renderMessages(); if (window.innerWidth < 768) toggleSidebar(); }
+        function deleteChat(id) { delete chats[id]; if (currentChatId === id) createNewChat(); else { save(); renderHistory(); } }
+        function clearCurrentChat() { chats[currentChatId].messages = []; save(); renderMessages(); }
 
         function appendMessage(role, text) {
             const wrap = document.createElement('div');
             wrap.className = `flex flex-col ${role === 'user' ? 'items-end' : 'items-start'} w-full animate-in fade-in slide-in-from-bottom-2 duration-300`;
-            
-            // Render YouTube links if present
-            let processedText = text;
-            const youtubeRegex = /(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/\S+/g;
-            if (role === 'ai' && youtubeRegex.test(text)) {
-                processedText = text.replace(youtubeRegex, (match) => {
-                    return `\n\n🎬 **Educational Video:**\n[Watch Here](${match})\n\n`;
-                });
-            }
-
-            wrap.innerHTML = `
-                <span class="text-[9px] font-bold text-slate-400 mb-1 px-1 uppercase tracking-widest">
-                    ${role === 'user' ? 'Me' : 'Guru'}
-                </span>
-                <div class="bubble ${role === 'user' ? 'user shadow-green-100' : 'ai shadow-slate-200'}">
-                    ${role === 'ai' ? marked.parse(processedText) : text}
-                </div>
-            `;
+            wrap.innerHTML = `<span class="text-[9px] font-bold text-slate-400 mb-1 px-1 uppercase tracking-widest">${role === 'user' ? 'Me' : 'Guru'}</span><div class="bubble ${role === 'user' ? 'user shadow-green-100' : 'ai shadow-slate-200'}">${role === 'ai' ? marked.parse(text) : text}</div>`;
             chatBox.appendChild(wrap);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
@@ -252,65 +158,28 @@
         function renderMessages() {
             chatBox.innerHTML = '';
             document.getElementById('chat-title').innerText = chats[currentChatId].title;
-            
-            if (chats[currentChatId].messages.length === 0) {
-                appendMessage('ai', "नमस्ते बेटा! 🙏 मैं हूँ आपका **पॉकेट गुरु**। आज आपको क्या पढ़ना है? गणित, विज्ञान या कुछ और? \n\n*टिप: आप मुझसे वीडियो के लिए भी पूछ सकते हैं!*");
-            } else {
-                chats[currentChatId].messages.forEach(m => appendMessage(m.role, m.content));
-            }
+            if (chats[currentChatId].messages.length === 0) appendMessage('ai', "नमस्ते बेटा! 🙏 मैं हूँ आपका **पॉकेट गुरु**। क्या पढ़ना है आज?");
+            else chats[currentChatId].messages.forEach(m => appendMessage(m.role, m.content));
         }
 
         async function handleSend() {
             const text = userInput.value.trim();
-            if (!text) return;
+            if (!text || !API_KEY) return (!API_KEY ? openSettings() : null);
 
-            // Check for API Key
-            if (!API_KEY) {
-                alert("Beta, pehle settings mein jaakar apni OpenRouter API Key daalo!");
-                openSettings();
-                return;
-            }
-
-            // Update title on first message
-            if (chats[currentChatId].messages.length === 0) {
-                chats[currentChatId].title = text.substring(0, 20) + (text.length > 20 ? '...' : '');
-                renderHistory();
-            }
-
-            // Add user message to UI and State
+            if (chats[currentChatId].messages.length === 0) { chats[currentChatId].title = text.substring(0, 20); renderHistory(); }
             appendMessage('user', text);
             chats[currentChatId].messages.push({ role: 'user', content: text });
-            userInput.value = '';
-            userInput.style.height = 'auto';
-
-            // Show Typing Indicator
+            userInput.value = ''; userInput.style.height = 'auto';
             typingIndicator.classList.remove('hidden');
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
                 const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${API_KEY}`,
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": "https://pocket-guru.ai",
-                        "X-Title": "Pocket Guru"
-                    },
+                    headers: { "Authorization": `Bearer ${API_KEY}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: ACTIVE_MODEL,
-                        messages: [
-                            { 
-                                role: "system", 
-                                content: `You are 'Pocket Guru', a wise and caring Indian AI tutor for students. 
-                                Rule 1: Always speak in Hinglish (Hindi + English). 
-                                Rule 2: Address user as 'Beta'. 
-                                Rule 3: Keep explanations simple, step-by-step, and use real-life examples. 
-                                Rule 4: If asked for a 'video' or 'YouTube', provide a descriptive video link and follow up with a summary.
-                                Rule 5: If asked to 'draw' or 'diagram', describe the diagram clearly with labels.
-                                Rule 6: Never be rude or too complex.`
-                            },
-                            ...chats[currentChatId].messages
-                        ]
+                        messages: [{ role: "system", content: "You are 'Pocket Guru', a wise Indian tutor. Always speak in Hinglish. Address user as 'Beta'. Provide YouTube links if asked for videos." }, ...chats[currentChatId].messages]
                     })
                 });
 
@@ -323,45 +192,21 @@
                     chats[currentChatId].messages.push({ role: 'assistant', content: aiReply });
                     save();
                 } else {
-                    throw new Error(data.error?.message || "Beta, API ne koi response nahi diya.");
+                    // YAHAN ERROR FIX HAI: Agar endpoint nahi mila toh manual error message
+                    throw new Error(data.error?.message || "Endpoint not found or Model offline.");
                 }
-
             } catch (error) {
                 typingIndicator.classList.add('hidden');
-                appendMessage('ai', `❌ **Beta, Error aagaya:** ${error.message}\n\nCheck karo ki aapki API Key sahi hai ya nahi.`);
+                appendMessage('ai', `❌ **Beta, Error aagaya:**\n${error.message}\n\n**Solution:** Settings mein jaakar Model change karke dekho (Gemini use karo).`);
             }
         }
 
-        // --- SETTINGS UI ---
-        function openSettings() {
-            document.getElementById('api-key-input').value = API_KEY;
-            document.getElementById('model-select').value = ACTIVE_MODEL;
-            document.getElementById('settings-modal').classList.remove('hidden');
-        }
+        function openSettings() { document.getElementById('api-key-input').value = API_KEY; document.getElementById('model-select').value = ACTIVE_MODEL; document.getElementById('settings-modal').classList.remove('hidden'); }
+        function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
+        function saveSettings() { API_KEY = document.getElementById('api-key-input').value.trim(); ACTIVE_MODEL = document.getElementById('model-select').value; localStorage.setItem('pg_api_key', API_KEY); localStorage.setItem('pg_model', ACTIVE_MODEL); closeSettings(); }
 
-        function closeSettings() {
-            document.getElementById('settings-modal').classList.add('hidden');
-        }
-
-        function saveSettings() {
-            API_KEY = document.getElementById('api-key-input').value.trim();
-            ACTIVE_MODEL = document.getElementById('model-select').value;
-            localStorage.setItem('pg_api_key', API_KEY);
-            localStorage.setItem('pg_model', ACTIVE_MODEL);
-            closeSettings();
-            alert("Settings saved successfully!");
-        }
-
-        // --- EVENT LISTENERS ---
         document.getElementById('send-btn').onclick = handleSend;
-        userInput.onkeydown = (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSend();
-            }
-        };
-
-        // Initialize on load
+        userInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } };
         window.onload = init;
     </script>
 </body>
