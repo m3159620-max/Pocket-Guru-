@@ -11,97 +11,136 @@
         .markdown-body p { margin-bottom: 0.8em; }
         .typing-indicator span { display: inline-block; width: 5px; height: 5px; background: #94a3b8; border-radius: 50%; animation: bounce 1.3s infinite; margin-right: 2px; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
     </style>
 </head>
 <body class="bg-gray-100 h-screen flex overflow-hidden font-sans">
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col hidden md:flex">
+    <aside class="w-64 bg-slate-900 text-white flex flex-col hidden md:flex border-r border-slate-700">
         <div class="p-5 text-xl font-bold border-b border-slate-700 flex items-center gap-2">
             <i class="fa-solid fa-graduation-cap text-blue-400"></i> Pocket Guru
         </div>
-        <div class="p-4 flex-1 overflow-y-auto" id="chatHistory"></div>
-        <button onclick="openSettings()" class="p-4 hover:bg-slate-800 text-left flex items-center gap-3 border-t border-slate-700">
+        <div class="p-4">
+            <button onclick="createNewChat()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
+                <i class="fa-solid fa-plus"></i> New Chat
+            </button>
+        </div>
+        <div class="flex-1 overflow-y-auto px-2 space-y-1" id="chatHistoryList">
+            </div>
+        <button onclick="openSettings()" class="p-4 hover:bg-slate-800 text-left flex items-center gap-3 border-t border-slate-700 text-gray-400 hover:text-white transition">
             <i class="fa-solid fa-gear"></i> Settings
         </button>
     </aside>
 
-    <main class="flex-1 flex flex-col relative">
-        <header class="bg-white border-b p-4 flex justify-between items-center shadow-sm">
-            <div class="font-bold text-lg">Pocket Guru <span class="text-green-500 text-xs ml-2">● Online</span></div>
-            <button onclick="location.reload()" class="text-gray-500"><i class="fa-solid fa-rotate"></i></button>
+    <main class="flex-1 flex flex-col relative bg-white md:bg-gray-100">
+        <header class="bg-white border-b p-4 flex justify-between items-center shadow-sm z-10">
+            <div class="font-bold text-lg flex items-center gap-2">
+                <span class="md:hidden"><i class="fa-solid fa-bars"></i></span>
+                Pocket Guru <span class="text-green-500 text-[10px] ml-2">● Online</span>
+            </div>
+            <button onclick="clearCurrentChat()" class="text-red-400 text-sm hover:text-red-600"><i class="fa-solid fa-trash"></i> Clear</button>
         </header>
 
-        <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-4 pb-28">
-            <div class="bg-white p-4 rounded-lg shadow-sm max-w-[80%] border-l-4 border-blue-500">
-                Namaste! 🙏 Main aapka <b>Pocket Guru</b> hoon. Boliye beta, aaj kya padhna hai?
+        <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-6 pb-32">
             </div>
-        </div>
 
-        <div class="absolute bottom-0 w-full p-4 bg-gray-100">
-            <div class="max-w-4xl mx-auto flex gap-2 items-end bg-white p-2 rounded-xl shadow-lg border">
-                <textarea id="userInput" rows="1" class="flex-1 p-2 outline-none resize-none max-h-40" placeholder="Yahan apna sawal likhein..."></textarea>
-                <button id="sendBtn" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
+        <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-100 to-transparent">
+            <div class="max-w-4xl mx-auto flex gap-2 items-end bg-white p-3 rounded-2xl shadow-xl border border-gray-200">
+                <textarea id="userInput" rows="1" class="flex-1 p-2 outline-none resize-none max-h-40 text-gray-700" placeholder="Yahan apna sawal likhein beta..."></textarea>
+                <button id="sendBtn" class="bg-blue-600 text-white w-12 h-11 rounded-xl hover:bg-blue-700 flex items-center justify-center transition-all shadow-md">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
-            <p class="text-[10px] text-center mt-2 text-gray-400">Press Enter to send, Shift+Enter for new line</p>
+            <p class="text-[10px] text-center mt-2 text-gray-400">Enter to send • Shift+Enter for new line</p>
         </div>
     </main>
 
-    <div id="modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
-        <div class="bg-white p-6 rounded-xl w-80 shadow-2xl">
-            <h2 class="font-bold mb-4">API Settings</h2>
-            <input type="password" id="keyInput" class="w-full border p-2 rounded mb-3" placeholder="Paste OpenRouter Key">
-            <input type="text" id="modelInput" class="w-full border p-2 rounded mb-4" value="google/gemini-2.0-flash-lite-preview-02-05:free">
-            <div class="flex justify-end gap-2">
-                <button onclick="closeSettings()" class="text-gray-500 px-3">Cancel</button>
-                <button onclick="saveSettings()" class="bg-blue-600 text-white px-4 py-1 rounded">Save</button>
+    <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm">
+        <div class="bg-white p-6 rounded-2xl w-80 shadow-2xl scale-95 transition-all">
+            <h2 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-key text-yellow-500"></i> API Settings</h2>
+            <label class="text-xs text-gray-500 font-semibold">OPENROUTER KEY</label>
+            <input type="password" id="keyInput" class="w-full border p-2 rounded-lg mb-4 mt-1 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="sk-or-v1-...">
+            <label class="text-xs text-gray-500 font-semibold">MODEL</label>
+            <input type="text" id="modelInput" class="w-full border p-2 rounded-lg mb-5 mt-1 focus:ring-2 focus:ring-blue-500 outline-none" value="google/gemini-2.0-flash-lite-preview-02-05:free">
+            <div class="flex justify-end gap-3">
+                <button onclick="closeSettings()" class="text-gray-400 text-sm font-medium">Cancel</button>
+                <button onclick="saveSettings()" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg">Save</button>
             </div>
         </div>
     </div>
 
     <script>
+        let chats = JSON.parse(localStorage.getItem('pg_memories')) || {};
+        let currentChatId = localStorage.getItem('pg_last_chat') || '';
         let apiKey = localStorage.getItem('pg_key') || '';
         let model = localStorage.getItem('pg_model') || 'google/gemini-2.0-flash-lite-preview-02-05:free';
+
         const chatBox = document.getElementById('chatBox');
         const userInput = document.getElementById('userInput');
+        const historyList = document.getElementById('chatHistoryList');
 
-        // Enter Key Logic (Sahi wala)
-        userInput.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                sendMessage();
+        function init() {
+            if (!currentChatId || !chats[currentChatId]) {
+                createNewChat();
+            } else {
+                renderSidebar();
+                renderMessages();
             }
-        });
+        }
 
-        document.getElementById('sendBtn').onclick = sendMessage;
+        function createNewChat() {
+            const id = 'chat_' + Date.now();
+            chats[id] = { id, title: 'New Conversation', messages: [] };
+            currentChatId = id;
+            updateApp();
+        }
+
+        function renderSidebar() {
+            historyList.innerHTML = '';
+            Object.values(chats).reverse().forEach(chat => {
+                const btn = document.createElement('div');
+                btn.className = `p-3 mb-1 rounded-lg text-sm cursor-pointer transition flex items-center gap-2 truncate ${chat.id === currentChatId ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'text-gray-400 hover:bg-slate-800'}`;
+                btn.innerHTML = `<i class="fa-regular fa-message text-xs"></i> ${chat.title}`;
+                btn.onclick = () => { currentChatId = chat.id; updateApp(); };
+                historyList.appendChild(btn);
+            });
+        }
+
+        function renderMessages() {
+            chatBox.innerHTML = '';
+            appendMsg('ai', "Namaste Beta! Main Pocket Guru hoon, aapki madad karne ke liye yahan hoon. Aaj aaj main kaise madad kar sakta hoon?");
+            chats[currentChatId].messages.forEach(m => appendMsg(m.role, m.content));
+        }
 
         async function sendMessage() {
             const text = userInput.value.trim();
-            if (!text) return;
-            if (!apiKey) { alert("Pehle Settings mein API Key daalo!"); openSettings(); return; }
+            if (!text || !apiKey) { if(!apiKey) openSettings(); return; }
 
-            // Add User Message
-            appendMsg('user', text);
             userInput.value = '';
             userInput.style.height = 'auto';
+            
+            // First message sets the title
+            if (chats[currentChatId].messages.length === 0) {
+                chats[currentChatId].title = text.substring(0, 25) + '...';
+            }
 
-            // Show Loading
+            chats[currentChatId].messages.push({ role: 'user', content: text });
+            updateApp();
+
             const loader = document.createElement('div');
-            loader.innerHTML = `<div class="typing-indicator"><span></span><span></span><span></span></div>`;
+            loader.className = "flex justify-start";
+            loader.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
             chatBox.appendChild(loader);
             chatBox.scrollTop = chatBox.scrollHeight;
 
             try {
                 const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
-                    headers: {
-                        "Authorization": `Bearer ${apiKey}`,
-                        "Content-Type": "application/json"
-                    },
+                    headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: model,
-                        messages: [{ role: "system", content: "You are Pocket Guru, a helpful teacher. Always reply in Hinglish. Use 'Beta'." }, { role: "user", content: text }]
+                        messages: [{ role: "system", content: "You are Pocket Guru, a helpful teacher. Always reply in Hinglish. Use 'Beta'." }, ...chats[currentChatId].messages]
                     })
                 });
 
@@ -109,23 +148,39 @@
                 loader.remove();
 
                 if (data.choices) {
-                    appendMsg('ai', data.choices[0].message.content);
-                } else {
-                    appendMsg('ai', "Error: API key ya model galat hai.");
+                    const aiMsg = data.choices[0].message.content;
+                    chats[currentChatId].messages.push({ role: 'ai', content: aiMsg });
+                    updateApp();
                 }
             } catch (err) {
                 loader.remove();
-                appendMsg('ai', "Internet check karo beta, reply nahi aa pa raha.");
+                appendMsg('ai', "Error: Beta connection check karo.");
             }
         }
 
         function appendMsg(role, content) {
+            const wrapper = document.createElement('div');
+            wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in duration-300`;
             const div = document.createElement('div');
-            div.className = `p-3 rounded-lg max-w-[85%] ${role === 'user' ? 'bg-blue-600 text-white ml-auto' : 'bg-white border shadow-sm'}`;
+            div.className = `p-4 rounded-2xl max-w-[85%] shadow-sm ${role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border text-gray-800 rounded-tl-none markdown-body'}`;
             div.innerHTML = role === 'ai' ? marked.parse(content) : content;
-            chatBox.appendChild(div);
+            wrapper.appendChild(div);
+            chatBox.appendChild(wrapper);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
+
+        function updateApp() {
+            localStorage.setItem('pg_memories', JSON.stringify(chats));
+            localStorage.setItem('pg_last_chat', currentChatId);
+            renderSidebar();
+            renderMessages();
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        function clearCurrentChat() { if(confirm("Kya aap ye chat delete karna chahte hain?")) { delete chats[currentChatId]; createNewChat(); } }
+
+        userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
+        document.getElementById('sendBtn').onclick = sendMessage;
 
         function openSettings() { document.getElementById('modal').style.display = 'flex'; document.getElementById('keyInput').value = apiKey; }
         function closeSettings() { document.getElementById('modal').style.display = 'none'; }
@@ -136,6 +191,8 @@
             localStorage.setItem('pg_model', model);
             closeSettings();
         }
+
+        window.onload = init;
     </script>
 </body>
 </html>
