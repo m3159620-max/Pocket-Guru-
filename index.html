@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pocket Guru</title>
+    <title>Pocket Guru Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -11,68 +11,62 @@
         .markdown-body p { margin-bottom: 0.8em; }
         .typing-indicator span { display: inline-block; width: 5px; height: 5px; background: #94a3b8; border-radius: 50%; animation: bounce 1.3s infinite; margin-right: 2px; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .msg-btn { opacity: 0; transition: opacity 0.2s; }
+        .message-wrapper:hover .msg-btn { opacity: 1; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
     </style>
 </head>
-<body class="bg-gray-100 h-screen flex overflow-hidden font-sans">
+<body class="bg-[#f9fafb] h-screen flex overflow-hidden font-sans text-gray-800">
 
-    <aside class="w-64 bg-slate-900 text-white flex flex-col hidden md:flex border-r border-slate-700">
-        <div class="p-5 text-xl font-bold border-b border-slate-700 flex items-center gap-2">
-            <i class="fa-solid fa-graduation-cap text-blue-400"></i> Pocket Guru
+    <aside class="w-72 bg-slate-900 text-white flex flex-col hidden md:flex border-r border-slate-700">
+        <div class="p-5 text-xl font-bold border-b border-slate-700 flex items-center justify-between">
+            <span><i class="fa-solid fa-graduation-cap text-blue-400"></i> Pocket Guru</span>
+            <button onclick="createNewChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-square-plus"></i></button>
         </div>
-        <div class="p-4">
-            <button onclick="createNewChat()" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg text-sm transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-plus"></i> New Chat
-            </button>
-        </div>
-        <div class="flex-1 overflow-y-auto px-2 space-y-1" id="chatHistoryList">
-            </div>
-        <button onclick="openSettings()" class="p-4 hover:bg-slate-800 text-left flex items-center gap-3 border-t border-slate-700 text-gray-400 hover:text-white transition">
+        <div class="flex-1 overflow-y-auto p-3 space-y-2" id="chatHistoryList"></div>
+        <button onclick="openSettings()" class="p-4 hover:bg-slate-800 flex items-center gap-3 border-t border-slate-700 text-gray-400">
             <i class="fa-solid fa-gear"></i> Settings
         </button>
     </aside>
 
-    <main class="flex-1 flex flex-col relative bg-white md:bg-gray-100">
-        <header class="bg-white border-b p-4 flex justify-between items-center shadow-sm z-10">
-            <div class="font-bold text-lg flex items-center gap-2">
-                <span class="md:hidden"><i class="fa-solid fa-bars"></i></span>
-                Pocket Guru <span class="text-green-500 text-[10px] ml-2">● Online</span>
-            </div>
-            <button onclick="clearCurrentChat()" class="text-red-400 text-sm hover:text-red-600"><i class="fa-solid fa-trash"></i> Clear</button>
+    <main class="flex-1 flex flex-col relative">
+        <header class="bg-white/80 backdrop-blur-md border-b p-4 flex justify-between items-center sticky top-0 z-20">
+            <div class="font-bold text-lg">Pocket Guru <span class="text-green-500 text-[10px] ml-2 font-normal italic">v2.0 Beta</span></div>
+            <button onclick="deleteAllChats()" class="text-red-400 text-xs hover:text-red-600 transition flex items-center gap-1">
+                <i class="fa-solid fa-trash-can"></i> Delete All History
+            </button>
         </header>
 
-        <div id="chatBox" class="flex-1 overflow-y-auto p-4 space-y-6 pb-32">
+        <div id="chatBox" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 pb-40">
             </div>
 
-        <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-gray-100 to-transparent">
-            <div class="max-w-4xl mx-auto flex gap-2 items-end bg-white p-3 rounded-2xl shadow-xl border border-gray-200">
-                <textarea id="userInput" rows="1" class="flex-1 p-2 outline-none resize-none max-h-40 text-gray-700" placeholder="Yahan apna sawal likhein beta..."></textarea>
-                <button id="sendBtn" class="bg-blue-600 text-white w-12 h-11 rounded-xl hover:bg-blue-700 flex items-center justify-center transition-all shadow-md">
+        <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-[#f9fafb] via-[#f9fafb] to-transparent">
+            <div class="max-w-3xl mx-auto flex gap-2 items-end bg-white p-3 rounded-2xl shadow-2xl border border-gray-200">
+                <textarea id="userInput" rows="1" class="flex-1 p-2 outline-none resize-none max-h-40 bg-transparent" placeholder="Poochiye beta, kuch bhi..."></textarea>
+                <button id="sendBtn" class="bg-blue-600 text-white w-12 h-11 rounded-xl hover:bg-blue-700 flex items-center justify-center shadow-lg transition-transform active:scale-95">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
-            <p class="text-[10px] text-center mt-2 text-gray-400">Enter to send • Shift+Enter for new line</p>
+            <p class="text-[10px] text-center mt-3 text-gray-400">Enter to send • Shift+Enter for new line • Use 'video' in prompt for links</p>
         </div>
     </main>
 
     <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm">
-        <div class="bg-white p-6 rounded-2xl w-80 shadow-2xl scale-95 transition-all">
-            <h2 class="font-bold text-gray-800 mb-4 flex items-center gap-2"><i class="fa-solid fa-key text-yellow-500"></i> API Settings</h2>
-            <label class="text-xs text-gray-500 font-semibold">OPENROUTER KEY</label>
-            <input type="password" id="keyInput" class="w-full border p-2 rounded-lg mb-4 mt-1 focus:ring-2 focus:ring-blue-500 outline-none" placeholder="sk-or-v1-...">
-            <label class="text-xs text-gray-500 font-semibold">MODEL</label>
-            <input type="text" id="modelInput" class="w-full border p-2 rounded-lg mb-5 mt-1 focus:ring-2 focus:ring-blue-500 outline-none" value="google/gemini-2.0-flash-lite-preview-02-05:free">
-            <div class="flex justify-end gap-3">
-                <button onclick="closeSettings()" class="text-gray-400 text-sm font-medium">Cancel</button>
-                <button onclick="saveSettings()" class="bg-blue-600 text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg">Save</button>
+        <div class="bg-white p-6 rounded-2xl w-80 shadow-2xl">
+            <h2 class="font-bold mb-4">Guru Settings</h2>
+            <input type="password" id="keyInput" class="w-full border p-2 rounded-lg mb-3 outline-none focus:ring-2 focus:ring-blue-500" placeholder="OpenRouter API Key">
+            <input type="text" id="modelInput" class="w-full border p-2 rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-500" value="google/gemini-2.0-flash-lite-preview-02-05:free">
+            <div class="flex justify-end gap-2">
+                <button onclick="closeSettings()" class="text-gray-400 px-3">Cancel</button>
+                <button onclick="saveSettings()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold shadow-md">Save</button>
             </div>
         </div>
     </div>
 
     <script>
-        let chats = JSON.parse(localStorage.getItem('pg_memories')) || {};
-        let currentChatId = localStorage.getItem('pg_last_chat') || '';
+        let chats = JSON.parse(localStorage.getItem('pg_v2_chats')) || {};
+        let currentChatId = localStorage.getItem('pg_v2_last_chat') || '';
         let apiKey = localStorage.getItem('pg_key') || '';
         let model = localStorage.getItem('pg_model') || 'google/gemini-2.0-flash-lite-preview-02-05:free';
 
@@ -81,66 +75,72 @@
         const historyList = document.getElementById('chatHistoryList');
 
         function init() {
-            if (!currentChatId || !chats[currentChatId]) {
-                createNewChat();
-            } else {
-                renderSidebar();
-                renderMessages();
-            }
+            if (!currentChatId || !chats[currentChatId]) createNewChat();
+            else { renderSidebar(); renderMessages(); }
         }
 
         function createNewChat() {
             const id = 'chat_' + Date.now();
             chats[id] = { id, title: 'New Conversation', messages: [] };
             currentChatId = id;
-            updateApp();
+            updateUI();
         }
 
         function renderSidebar() {
             historyList.innerHTML = '';
             Object.values(chats).reverse().forEach(chat => {
-                const btn = document.createElement('div');
-                btn.className = `p-3 mb-1 rounded-lg text-sm cursor-pointer transition flex items-center gap-2 truncate ${chat.id === currentChatId ? 'bg-blue-600/20 text-blue-400 border border-blue-500/30' : 'text-gray-400 hover:bg-slate-800'}`;
-                btn.innerHTML = `<i class="fa-regular fa-message text-xs"></i> ${chat.title}`;
-                btn.onclick = () => { currentChatId = chat.id; updateApp(); };
-                historyList.appendChild(btn);
+                const div = document.createElement('div');
+                div.className = `group flex items-center justify-between p-3 rounded-lg cursor-pointer transition ${chat.id === currentChatId ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-slate-800'}`;
+                div.innerHTML = `
+                    <div class="flex items-center gap-2 truncate flex-1" onclick="switchChat('${chat.id}')">
+                        <i class="fa-regular fa-comment text-xs"></i>
+                        <span class="truncate text-sm">${chat.title}</span>
+                    </div>
+                    <button onclick="deleteChat('${chat.id}')" class="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 transition"><i class="fa-solid fa-xmark"></i></button>
+                `;
+                historyList.appendChild(div);
             });
         }
 
+        function switchChat(id) { currentChatId = id; updateUI(); }
+
         function renderMessages() {
             chatBox.innerHTML = '';
-            appendMsg('ai', "Namaste Beta! Main Pocket Guru hoon, aapki madad karne ke liye yahan hoon. Aaj aaj main kaise madad kar sakta hoon?");
-            chats[currentChatId].messages.forEach(m => appendMsg(m.role, m.content));
+            appendMsg('ai', "Namaste Beta! Main **Pocket Guru** hoon. Aaj main aapki kaise madad kar sakta hoon?", -1);
+            chats[currentChatId].messages.forEach((m, idx) => appendMsg(m.role, m.content, idx));
         }
 
-        async function sendMessage() {
-            const text = userInput.value.trim();
+        async function sendMessage(editIdx = null) {
+            let text = editIdx !== null ? document.getElementById(`edit-input-${editIdx}`).value : userInput.value.trim();
             if (!text || !apiKey) { if(!apiKey) openSettings(); return; }
 
-            userInput.value = '';
-            userInput.style.height = 'auto';
-            
-            // First message sets the title
-            if (chats[currentChatId].messages.length === 0) {
-                chats[currentChatId].title = text.substring(0, 25) + '...';
+            if (editIdx === null) {
+                userInput.value = '';
+                userInput.style.height = 'auto';
+                if (chats[currentChatId].messages.length === 0) chats[currentChatId].title = text.substring(0, 20);
+                chats[currentChatId].messages.push({ role: 'user', content: text, versions: [text], currentVersion: 0 });
+            } else {
+                // Versioning logic like ChatGPT
+                chats[currentChatId].messages[editIdx].versions.push(text);
+                chats[currentChatId].messages[editIdx].currentVersion = chats[currentChatId].messages[editIdx].versions.length - 1;
+                chats[currentChatId].messages[editIdx].content = text;
+                chats[currentChatId].messages.splice(editIdx + 1); // Delete following messages
             }
 
-            chats[currentChatId].messages.push({ role: 'user', content: text });
-            updateApp();
-
-            const loader = document.createElement('div');
-            loader.className = "flex justify-start";
-            loader.innerHTML = `<div class="bg-white p-4 rounded-xl shadow-sm border"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
-            chatBox.appendChild(loader);
-            chatBox.scrollTop = chatBox.scrollHeight;
-
+            updateUI();
+            
+            const loader = showLoader();
             try {
+                // Video Search Logic
+                let systemPrompt = "You are Pocket Guru, a teacher. Reply in Hinglish. Use 'Beta'.";
+                if(text.toLowerCase().includes('video')) systemPrompt += " If user asks for video, provide a valid YouTube link using format: https://www.youtube.com/embed?listType=search&list=TOPIC_NAME";
+
                 const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: model,
-                        messages: [{ role: "system", content: "You are Pocket Guru, a helpful teacher. Always reply in Hinglish. Use 'Beta'." }, ...chats[currentChatId].messages]
+                        messages: [{ role: "system", content: systemPrompt }, ...chats[currentChatId].messages.map(m => ({role: m.role, content: m.content}))]
                     })
                 });
 
@@ -148,40 +148,95 @@
                 loader.remove();
 
                 if (data.choices) {
-                    const aiMsg = data.choices[0].message.content;
-                    chats[currentChatId].messages.push({ role: 'ai', content: aiMsg });
-                    updateApp();
+                    const aiContent = data.choices[0].message.content;
+                    chats[currentChatId].messages.push({ role: 'ai', content: aiContent });
+                    updateUI();
                 }
             } catch (err) {
                 loader.remove();
-                appendMsg('ai', "Error: Beta connection check karo.");
+                appendMsg('ai', "Beta, API limits ya internet check karo.");
             }
         }
 
-        function appendMsg(role, content) {
+        function appendMsg(role, content, idx) {
             const wrapper = document.createElement('div');
-            wrapper.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'} animate-in fade-in duration-300`;
-            const div = document.createElement('div');
-            div.className = `p-4 rounded-2xl max-w-[85%] shadow-sm ${role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border text-gray-800 rounded-tl-none markdown-body'}`;
-            div.innerHTML = role === 'ai' ? marked.parse(content) : content;
-            wrapper.appendChild(div);
+            wrapper.className = `message-wrapper flex flex-col ${role === 'user' ? 'items-end' : 'items-start'} group`;
+            
+            const bubble = document.createElement('div');
+            bubble.className = `p-4 rounded-2xl max-w-[85%] shadow-sm relative ${role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border border-gray-200 text-gray-800 rounded-tl-none markdown-body'}`;
+            
+            // Content
+            const textContent = document.createElement('div');
+            textContent.id = `msg-text-${idx}`;
+            textContent.innerHTML = role === 'ai' ? marked.parse(content) : content;
+            bubble.appendChild(textContent);
+
+            // Tools (Copy/Edit)
+            if(idx !== -1) {
+                const tools = document.createElement('div');
+                tools.className = `msg-btn flex gap-3 mt-2 text-[10px] ${role === 'user' ? 'text-blue-100 justify-end' : 'text-gray-400 justify-start'}`;
+                
+                let html = `<button onclick="copyMsg('${content}')"><i class="fa-regular fa-copy"></i> Copy</button>`;
+                if(role === 'user') {
+                    html += `<button onclick="showEdit(${idx})"><i class="fa-regular fa-pen-to-square"></i> Edit</button>`;
+                    const m = chats[currentChatId].messages[idx];
+                    if(m.versions && m.versions.length > 1) {
+                        html += `<span class="ml-2 font-bold">${m.currentVersion + 1}/${m.versions.length} <button onclick="switchVersion(${idx}, -1)">◀</button> <button onclick="switchVersion(${idx}, 1)">▶</button></span>`;
+                    }
+                }
+                tools.innerHTML = html;
+                bubble.appendChild(tools);
+            }
+
+            wrapper.appendChild(bubble);
             chatBox.appendChild(wrapper);
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        function updateApp() {
-            localStorage.setItem('pg_memories', JSON.stringify(chats));
-            localStorage.setItem('pg_last_chat', currentChatId);
-            renderSidebar();
-            renderMessages();
-            chatBox.scrollTop = chatBox.scrollHeight;
+        function showEdit(idx) {
+            const container = document.getElementById(`msg-text-${idx}`);
+            const originalText = chats[currentChatId].messages[idx].content;
+            container.innerHTML = `
+                <textarea id="edit-input-${idx}" class="w-full bg-blue-700 text-white p-2 rounded border-none outline-none resize-none">${originalText}</textarea>
+                <div class="flex justify-end gap-2 mt-2">
+                    <button onclick="renderMessages()" class="text-xs bg-blue-500 px-2 py-1 rounded">Cancel</button>
+                    <button onclick="sendMessage(${idx})" class="text-xs bg-white text-blue-600 px-2 py-1 rounded font-bold">Save & Submit</button>
+                </div>
+            `;
         }
 
-        function clearCurrentChat() { if(confirm("Kya aap ye chat delete karna chahte hain?")) { delete chats[currentChatId]; createNewChat(); } }
+        function switchVersion(msgIdx, dir) {
+            const m = chats[currentChatId].messages[msgIdx];
+            let newVer = m.currentVersion + dir;
+            if(newVer >= 0 && newVer < m.versions.length) {
+                m.currentVersion = newVer;
+                m.content = m.versions[newVer];
+                updateUI();
+            }
+        }
+
+        function copyMsg(text) { navigator.clipboard.writeText(text); }
+        function deleteChat(id) { delete chats[id]; if(currentChatId === id) createNewChat(); else updateUI(); }
+        function deleteAllChats() { if(confirm("Saari history uda dein?")) { chats = {}; createNewChat(); } }
+        
+        function updateUI() {
+            localStorage.setItem('pg_v2_chats', JSON.stringify(chats));
+            localStorage.setItem('pg_v2_last_chat', currentChatId);
+            renderSidebar();
+            renderMessages();
+        }
+
+        function showLoader() {
+            const loader = document.createElement('div');
+            loader.className = "flex justify-start";
+            loader.innerHTML = `<div class="bg-white p-4 rounded-xl border"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
+            chatBox.appendChild(loader);
+            chatBox.scrollTop = chatBox.scrollHeight;
+            return loader;
+        }
 
         userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-        document.getElementById('sendBtn').onclick = sendMessage;
-
+        document.getElementById('sendBtn').onclick = () => sendMessage();
         function openSettings() { document.getElementById('modal').style.display = 'flex'; document.getElementById('keyInput').value = apiKey; }
         function closeSettings() { document.getElementById('modal').style.display = 'none'; }
         function saveSettings() {
