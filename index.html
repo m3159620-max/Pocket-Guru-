@@ -1,251 +1,358 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pocket Guru Pro</title>
+    <title>पॉकेट गुरु v3.1 | अपग्रेड वर्ज़न</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* WhatsApp-like message bubbles */
+        .bubble {
+            max-width: 80%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .bubble::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-style: solid;
+        }
+        .bubble.user {
+            background-color: #dcf8c6;
+            align-self: flex-end;
+            border-top-right-radius: 0;
+        }
+        .bubble.user::after {
+            border-width: 8px 0 0 8px;
+            border-color: #dcf8c6 transparent transparent transparent;
+            right: -8px;
+            top: 0;
+        }
+        .bubble.ai {
+            background-color: #fff;
+            align-self: flex-start;
+            border-top-left-radius: 0;
+        }
+        .bubble.ai::after {
+            border-width: 0 0 8px 8px;
+            border-color: transparent transparent transparent #fff;
+            left: -8px;
+            top: 0;
+        }
+        .message-icon {
+            font-size: 1.25rem;
+            margin-right: 8px;
+            position: relative;
+            top: 2px;
+        }
+        .user .message-icon {
+            color: #25d366;
+        }
+        .ai .message-icon {
+            color: #3b82f6;
+        }
         .markdown-body p { margin-bottom: 0.8em; }
-        .typing-indicator span { display: inline-block; width: 5px; height: 5px; background: #94a3b8; border-radius: 50%; animation: bounce 1.3s infinite; margin-right: 2px; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-        .msg-btn { opacity: 0; transition: opacity 0.2s; }
-        .message-wrapper:hover .msg-btn { opacity: 1; }
-        ::-webkit-scrollbar { width: 5px; }
-        ::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        .markdown-body p:last-child { margin-bottom: 0; }
+        .markdown-body a { color: #2563eb; text-decoration: underline; font-weight: 500; }
+        .typing-indicator span {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            background-color: #9ca3af;
+            border-radius: 50%;
+            animation: typing 1.4s infinite ease-in-out both;
+            margin: 0 2px;
+        }
+        .typing-indicator span:nth-child(1) { animation-delay: -0.32s; }
+        .typing-indicator span:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes typing {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        /* Link Previews */
+        .link-preview {
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-top: 10px;
+            background-color: #f9fafb;
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            gap: 12px;
+            text-decoration: none;
+            color: inherit;
+        }
+        .link-preview img {
+            width: 70px;
+            height: 70px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+        .link-preview .details {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        .link-preview .title {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #111827;
+        }
+        .link-preview .domain {
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
     </style>
 </head>
-<body class="bg-[#f9fafb] h-screen flex overflow-hidden font-sans text-gray-800">
+<body class="bg-gray-100 h-screen flex overflow-hidden font-sans text-gray-800">
 
-    <aside class="w-72 bg-slate-900 text-white flex flex-col hidden md:flex border-r border-slate-700">
-        <div class="p-5 text-xl font-bold border-b border-slate-700 flex items-center justify-between">
-            <span><i class="fa-solid fa-graduation-cap text-blue-400"></i> Pocket Guru</span>
-            <button onclick="createNewChat()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-square-plus"></i></button>
+    <aside class="w-64 bg-gray-900 text-white flex flex-col justify-between hidden md:flex border-r border-gray-800">
+        <div class="flex flex-col gap-4 p-4">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-graduation-cap text-3xl text-blue-400"></i>
+                <span class="text-xl font-bold tracking-tight">पॉकेट गुरु</span>
+            </div>
+            <button onclick="createNewChat()" class="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-xl text-sm transition font-medium">
+                <i class="fa-solid fa-plus"></i> न्यू चैट
+            </button>
         </div>
-        <div class="flex-1 overflow-y-auto p-3 space-y-2" id="chatHistoryList"></div>
-        <button onclick="openSettings()" class="p-4 hover:bg-slate-800 flex items-center gap-3 border-t border-slate-700 text-gray-400">
-            <i class="fa-solid fa-gear"></i> Settings
-        </button>
+        
+        <div class="p-4 border-t border-gray-800">
+            <button onclick="openSettings()" class="flex items-center gap-3 text-gray-400 hover:text-white hover:bg-gray-800 p-3 rounded-lg text-sm transition">
+                <i class="fa-solid fa-cog text-lg"></i> सेटिंग्स
+            </button>
+        </div>
     </aside>
 
-    <main class="flex-1 flex flex-col relative">
-        <header class="bg-white/80 backdrop-blur-md border-b p-4 flex justify-between items-center sticky top-0 z-20">
-            <div class="font-bold text-lg">Pocket Guru <span class="text-green-500 text-[10px] ml-2 font-normal italic">v2.0 Beta</span></div>
-            <button onclick="deleteAllChats()" class="text-red-400 text-xs hover:text-red-600 transition flex items-center gap-1">
-                <i class="fa-solid fa-trash-can"></i> Delete All History
-            </button>
+    <main class="flex-1 flex flex-col relative w-full">
+        <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between z-10 sticky top-0 shadow-sm">
+            <div class="flex items-center gap-3">
+                <i class="fa-solid fa-graduation-cap text-3xl text-blue-500"></i>
+                <div class="flex flex-col">
+                    <span class="font-bold text-gray-800 text-lg">पॉकेट गुरु</span>
+                    <span id="model-badge" class="text-[10px] text-slate-400 font-mono hidden md:block"></span>
+                </div>
+            </div>
+            <button onclick="clearChat()" class="text-xs text-red-500 hover:text-red-700 font-medium"><i class="fa-solid fa-trash mr-1"></i>चैट साफ़ करें</button>
         </header>
 
-        <div id="chatBox" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-8 pb-40">
+        <div id="chat-list" class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 pb-32">
             </div>
+        
+        <div id="typing-indicator" class="typing-indicator p-4 flex gap-2 items-center hidden relative left-[-8px]">
+            <i class="fa-solid fa-graduation-cap message-icon text-blue-500"></i>
+            <div><span></span><span></span><span></span></div>
+        </div>
 
-        <div class="absolute bottom-0 w-full p-4 bg-gradient-to-t from-[#f9fafb] via-[#f9fafb] to-transparent">
-            <div class="max-w-3xl mx-auto flex gap-2 items-end bg-white p-3 rounded-2xl shadow-2xl border border-gray-200">
-                <textarea id="userInput" rows="1" class="flex-1 p-2 outline-none resize-none max-h-40 bg-transparent" placeholder="Poochiye beta, kuch bhi..."></textarea>
-                <button id="sendBtn" class="bg-blue-600 text-white w-12 h-11 rounded-xl hover:bg-blue-700 flex items-center justify-center shadow-lg transition-transform active:scale-95">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
+        <footer class="p-4 bg-gray-100 border-t border-gray-200 absolute bottom-0 w-full z-10">
+            <div class="max-w-4xl mx-auto flex items-end bg-white rounded-2xl shadow-xl border border-gray-200 p-2">
+                <textarea id="user-input" rows="1" class="flex-1 p-3 px-4 outline-none resize-none max-h-48 bg-transparent text-gray-700 leading-relaxed" placeholder="पूंछें बेटा, आज क्या पढ़ना है? (या 'गणित वीडियो' मांगें)..."></textarea>
+                <div class="flex gap-1.5 p-1 mb-1 mr-1">
+                    <button id="mic-btn" class="bg-blue-100 text-blue-600 w-11 h-10 rounded-xl hover:bg-blue-200 flex items-center justify-center transition" title="Microphone"><i class="fa-solid fa-microphone text-lg"></i></button>
+                    <button id="send-btn" class="bg-blue-600 text-white w-12 h-11 rounded-xl hover:bg-blue-700 flex items-center justify-center shadow-lg transition active:scale-95" title="Send"><i class="fa-solid fa-paper-plane"></i></button>
+                </div>
             </div>
-            <p class="text-[10px] text-center mt-3 text-gray-400">Enter to send • Shift+Enter for new line • Use 'video' in prompt for links</p>
         </div>
     </main>
 
-    <div id="modal" class="fixed inset-0 bg-black/60 hidden items-center justify-center z-50 backdrop-blur-sm">
-        <div class="bg-white p-6 rounded-2xl w-80 shadow-2xl">
-            <h2 class="font-bold mb-4">Guru Settings</h2>
-            <input type="password" id="keyInput" class="w-full border p-2 rounded-lg mb-3 outline-none focus:ring-2 focus:ring-blue-500" placeholder="OpenRouter API Key">
-            <input type="text" id="modelInput" class="w-full border p-2 rounded-lg mb-4 outline-none focus:ring-2 focus:ring-blue-500" value="google/gemini-2.0-flash-lite-preview-02-05:free">
-            <div class="flex justify-end gap-2">
-                <button onclick="closeSettings()" class="text-gray-400 px-3">Cancel</button>
-                <button onclick="saveSettings()" class="bg-blue-600 text-white px-5 py-2 rounded-lg font-bold shadow-md">Save</button>
+    <div id="settings-modal" class="fixed inset-0 bg-slate-900/60 hidden items-center justify-center z-50 backdrop-blur-sm px-4">
+        <div class="bg-white p-6 rounded-2xl w-full max-w-sm shadow-2xl animate-in zoom-in-95 duration-200 border border-slate-200">
+            <h2 class="font-bold text-slate-800 text-lg mb-4 flex items-center gap-2"><i class="fa-solid fa-shield-halved text-blue-500"></i> API कॉन्फ़िगरेशन</h2>
+            <p class="text-[10px] text-slate-400 font-mono mb-4 text-center">सुरक्षा के लिए, इसे हार्डकोड नहीं किया गया है।</p>
+            <div class="space-y-4">
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">OpenRouter API कीज़</label>
+                    <input type="password" id="api-key-input" class="w-full border border-slate-200 p-3 rounded-xl mt-1 outline-none focus:border-blue-500 transition" placeholder="sk-or-v1-...">
+                </div>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-500 uppercase">AI मॉडल का नाम</label>
+                    <input type="text" id="model-name-input" class="w-full border border-slate-200 p-3 rounded-xl mt-1 outline-none focus:border-blue-500 transition" value="google/gemini-2.0-flash-lite-preview-02-05:free">
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-6">
+                <button onclick="closeSettings()" class="text-slate-400 font-medium px-4">बंद करें</button>
+                <button onclick="saveSettings()" class="bg-blue-600 text-white px-6 py-2.5 rounded-xl font-bold shadow-blue-200 shadow-lg hover:bg-blue-700 transition active:scale-95">सेव करें</button>
             </div>
         </div>
     </div>
 
     <script>
-        let chats = JSON.parse(localStorage.getItem('pg_v2_chats')) || {};
-        let currentChatId = localStorage.getItem('pg_v2_last_chat') || '';
+        let chats = JSON.parse(localStorage.getItem('pg_v3_chats')) || {};
+        let currentChatId = localStorage.getItem('pg_v3_active_chat') || '';
         let apiKey = localStorage.getItem('pg_key') || '';
         let model = localStorage.getItem('pg_model') || 'google/gemini-2.0-flash-lite-preview-02-05:free';
 
-        const chatBox = document.getElementById('chatBox');
-        const userInput = document.getElementById('userInput');
-        const historyList = document.getElementById('chatHistoryList');
+        const chatList = document.getElementById('chat-list');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        // Prebuilt Thumbnail Previews (SIMULATED for demo)
+        const prebuiltPreviews = {
+            'https://www.youtube.com/watch?v=123': {
+                title: 'गणित कक्षा 10वीं - द्विघात समीकरण (पार्ट 1)',
+                image: 'https://i.ytimg.com/vi/123/hqdefault.jpg',
+                domain: 'youtube.com'
+            },
+            'https://github.com/': {
+                title: 'GitHub: जहां डेवलपर मिलते हैं',
+                image: 'https://github.githubassets.com/images/modules/open_graph/github-logo.png',
+                domain: 'github.com'
+            },
+            'http://openai.com': {
+                title: 'OpenAI: AI रिसर्च और डिप्लॉयमेंट',
+                image: 'https://cdn.openai.com/common/og-image-standard.png',
+                domain: 'openai.com'
+            }
+        };
 
         function init() {
+            document.getElementById('model-badge').innerText = model.split('/')[1] || model;
+            userInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+            });
+
             if (!currentChatId || !chats[currentChatId]) createNewChat();
-            else { renderSidebar(); renderMessages(); }
+            else updateChatUI();
         }
 
         function createNewChat() {
-            const id = 'chat_' + Date.now();
-            chats[id] = { id, title: 'New Conversation', messages: [] };
+            const id = 'c' + Date.now();
+            chats[id] = { id, title: 'New Chat', messages: [] };
             currentChatId = id;
-            updateUI();
+            updateChatUI();
         }
 
-        function renderSidebar() {
-            historyList.innerHTML = '';
-            Object.values(chats).reverse().forEach(chat => {
-                const div = document.createElement('div');
-                div.className = `group flex items-center justify-between p-3 rounded-lg cursor-pointer transition ${chat.id === currentChatId ? 'bg-blue-600 text-white' : 'text-gray-400 hover:bg-slate-800'}`;
-                div.innerHTML = `
-                    <div class="flex items-center gap-2 truncate flex-1" onclick="switchChat('${chat.id}')">
-                        <i class="fa-regular fa-comment text-xs"></i>
-                        <span class="truncate text-sm">${chat.title}</span>
-                    </div>
-                    <button onclick="deleteChat('${chat.id}')" class="opacity-0 group-hover:opacity-100 p-1 hover:text-red-400 transition"><i class="fa-solid fa-xmark"></i></button>
-                `;
-                historyList.appendChild(div);
-            });
+        function updateChatUI() {
+            localStorage.setItem('pg_v3_chats', JSON.stringify(chats));
+            localStorage.setItem('pg_v3_active_chat', currentChatId);
+            renderMessages();
         }
-
-        function switchChat(id) { currentChatId = id; updateUI(); }
 
         function renderMessages() {
-            chatBox.innerHTML = '';
-            appendMsg('ai', "Namaste Beta! Main **Pocket Guru** hoon. Aaj main aapki kaise madad kar sakta hoon?", -1);
-            chats[currentChatId].messages.forEach((m, idx) => appendMsg(m.role, m.content, idx));
+            chatList.innerHTML = '';
+            // Default Welcome Message
+            appendAiMessage("नमस्ते Beta! 🙏 मैं आपका **पॉकेट गुरु** हूँ। आज हम क्या सीखें? \n\nमुझे गणित, विज्ञान या किसी भी विषय पर पूछें, या 'गणित वीडियो' मांगें। मुझे सेटिंग्स में API कीज़ जोड़ना न भूलें!");
+            
+            chats[currentChatId].messages.forEach(msg => {
+                if(msg.role === 'user') appendUserMessage(msg.content);
+                else appendAiMessage(msg.content);
+            });
+            chatList.scrollTop = chatList.scrollHeight;
         }
 
-        async function sendMessage(editIdx = null) {
-            let text = editIdx !== null ? document.getElementById(`edit-input-${editIdx}`).value : userInput.value.trim();
-            if (!text || !apiKey) { if(!apiKey) openSettings(); return; }
+        async function handleSend() {
+            const text = userInput.value.trim();
+            if (!text) return;
+            if (!apiKey) { alert("सुरक्षा नोट: पहले सेटिंग्स में अपनी API कीज़ डालें!"); openSettings(); return; }
 
-            if (editIdx === null) {
-                userInput.value = '';
-                userInput.style.height = 'auto';
-                if (chats[currentChatId].messages.length === 0) chats[currentChatId].title = text.substring(0, 20);
-                chats[currentChatId].messages.push({ role: 'user', content: text, versions: [text], currentVersion: 0 });
-            } else {
-                // Versioning logic like ChatGPT
-                chats[currentChatId].messages[editIdx].versions.push(text);
-                chats[currentChatId].messages[editIdx].currentVersion = chats[currentChatId].messages[editIdx].versions.length - 1;
-                chats[currentChatId].messages[editIdx].content = text;
-                chats[currentChatId].messages.splice(editIdx + 1); // Delete following messages
-            }
+            appendUserMessage(text);
+            chats[currentChatId].messages.push({ role: 'user', content: text });
+            userInput.value = '';
+            userInput.style.height = 'auto';
+            userInput.focus();
+            chatList.scrollTop = chatList.scrollHeight;
 
-            updateUI();
-            
-            const loader = showLoader();
+            showTypingIndicator();
+
             try {
-                // Video Search Logic
-                let systemPrompt = "You are Pocket Guru, a teacher. Reply in Hinglish. Use 'Beta'.";
-                if(text.toLowerCase().includes('video')) systemPrompt += " If user asks for video, provide a valid YouTube link using format: https://www.youtube.com/embed?listType=search&list=TOPIC_NAME";
+                // simulated model response
+                let systemPrompt = "You are Pocket Guru, a wise teacher. Response in Hindi. Use 'Beta'. Use Markdown. If user asks for video, provide a valid youtube link format (like https://www.youtube.com/watch?v=123 for demo) and explain the topic.";
 
                 const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
                     headers: { "Authorization": `Bearer ${apiKey}`, "Content-Type": "application/json" },
                     body: JSON.stringify({
                         model: model,
-                        messages: [{ role: "system", content: systemPrompt }, ...chats[currentChatId].messages.map(m => ({role: m.role, content: m.content}))]
+                        messages: [{ role: "system", content: systemPrompt }, ...chats[currentChatId].messages]
                     })
                 });
 
                 const data = await res.json();
-                loader.remove();
+                hideTypingIndicator();
 
-                if (data.choices) {
+                if (data.choices && data.choices[0]) {
                     const aiContent = data.choices[0].message.content;
+                    appendAiMessage(aiContent);
                     chats[currentChatId].messages.push({ role: 'ai', content: aiContent });
-                    updateUI();
+                    updateChatUI();
+                } else {
+                    throw new Error("API Error");
                 }
             } catch (err) {
-                loader.remove();
-                appendMsg('ai', "Beta, API limits ya internet check karo.");
+                hideTypingIndicator();
+                appendAiMessage("❌ Sorry Beta, API या नेटवर्क एरर आ गया। एक बार अपनी सेटिंग्स चेक कर लो।");
             }
         }
 
-        function appendMsg(role, content, idx) {
-            const wrapper = document.createElement('div');
-            wrapper.className = `message-wrapper flex flex-col ${role === 'user' ? 'items-end' : 'items-start'} group`;
-            
+        function appendUserMessage(content) {
             const bubble = document.createElement('div');
-            bubble.className = `p-4 rounded-2xl max-w-[85%] shadow-sm relative ${role === 'user' ? 'bg-blue-600 text-white rounded-tr-none' : 'bg-white border border-gray-200 text-gray-800 rounded-tl-none markdown-body'}`;
+            bubble.className = "bubble user markdown-body";
+            bubble.innerHTML = `<i class="fa-solid fa-person message-icon"></i> ${content}`;
+            chatList.appendChild(bubble);
+        }
+
+        function appendAiMessage(content) {
+            const bubble = document.createElement('div');
+            bubble.className = "bubble ai markdown-body";
             
-            // Content
-            const textContent = document.createElement('div');
-            textContent.id = `msg-text-${idx}`;
-            textContent.innerHTML = role === 'ai' ? marked.parse(content) : content;
-            bubble.appendChild(textContent);
+            // marked parsing and cap icon addition
+            bubble.innerHTML = `<i class="fa-solid fa-graduation-cap message-icon"></i> ${marked.parse(content)}`;
+            
+            // handle links
+            handleLinkPreviews(bubble, content);
 
-            // Tools (Copy/Edit)
-            if(idx !== -1) {
-                const tools = document.createElement('div');
-                tools.className = `msg-btn flex gap-3 mt-2 text-[10px] ${role === 'user' ? 'text-blue-100 justify-end' : 'text-gray-400 justify-start'}`;
-                
-                let html = `<button onclick="copyMsg('${content}')"><i class="fa-regular fa-copy"></i> Copy</button>`;
-                if(role === 'user') {
-                    html += `<button onclick="showEdit(${idx})"><i class="fa-regular fa-pen-to-square"></i> Edit</button>`;
-                    const m = chats[currentChatId].messages[idx];
-                    if(m.versions && m.versions.length > 1) {
-                        html += `<span class="ml-2 font-bold">${m.currentVersion + 1}/${m.versions.length} <button onclick="switchVersion(${idx}, -1)">◀</button> <button onclick="switchVersion(${idx}, 1)">▶</button></span>`;
+            chatList.appendChild(bubble);
+            chatList.scrollTop = chatList.scrollHeight;
+        }
+
+        function handleLinkPreviews(bubbleElement, content) {
+            const urlRegex = /https?:\/\/[^\s]+/g;
+            const urls = content.match(urlRegex);
+
+            if (urls) {
+                urls.forEach(url => {
+                    const previewData = prebuiltPreviews[url] || prebuiltPreviews['https://www.youtube.com/watch?v='] || { title: url, image: 'https://via.placeholder.com/70x70?text=Link', domain: url.split('/')[2] };
+
+                    if (url.includes('youtube.com/watch')) {
+                        previewData.domain = 'youtube.com';
                     }
-                }
-                tools.innerHTML = html;
-                bubble.appendChild(tools);
-            }
 
-            wrapper.appendChild(bubble);
-            chatBox.appendChild(wrapper);
-            chatBox.scrollTop = chatBox.scrollHeight;
-        }
-
-        function showEdit(idx) {
-            const container = document.getElementById(`msg-text-${idx}`);
-            const originalText = chats[currentChatId].messages[idx].content;
-            container.innerHTML = `
-                <textarea id="edit-input-${idx}" class="w-full bg-blue-700 text-white p-2 rounded border-none outline-none resize-none">${originalText}</textarea>
-                <div class="flex justify-end gap-2 mt-2">
-                    <button onclick="renderMessages()" class="text-xs bg-blue-500 px-2 py-1 rounded">Cancel</button>
-                    <button onclick="sendMessage(${idx})" class="text-xs bg-white text-blue-600 px-2 py-1 rounded font-bold">Save & Submit</button>
-                </div>
-            `;
-        }
-
-        function switchVersion(msgIdx, dir) {
-            const m = chats[currentChatId].messages[msgIdx];
-            let newVer = m.currentVersion + dir;
-            if(newVer >= 0 && newVer < m.versions.length) {
-                m.currentVersion = newVer;
-                m.content = m.versions[newVer];
-                updateUI();
+                    const previewElement = document.createElement('a');
+                    previewElement.href = url;
+                    previewElement.target = '_blank';
+                    previewElement.className = 'link-preview';
+                    previewElement.innerHTML = `
+                        <img src="${previewData.image}" alt="link preview">
+                        <div class="details">
+                            <span class="title">${previewData.title}</span>
+                            <span class="domain"><i class="fa-solid fa-link text-xs mr-1"></i>${previewData.domain}</span>
+                        </div>
+                    `;
+                    bubbleElement.appendChild(previewElement);
+                });
             }
         }
 
-        function copyMsg(text) { navigator.clipboard.writeText(text); }
-        function deleteChat(id) { delete chats[id]; if(currentChatId === id) createNewChat(); else updateUI(); }
-        function deleteAllChats() { if(confirm("Saari history uda dein?")) { chats = {}; createNewChat(); } }
-        
-        function updateUI() {
-            localStorage.setItem('pg_v2_chats', JSON.stringify(chats));
-            localStorage.setItem('pg_v2_last_chat', currentChatId);
-            renderSidebar();
-            renderMessages();
-        }
+        function showTypingIndicator() { typingIndicator.classList.remove('hidden'); chatList.scrollTop = chatList.scrollHeight; }
+        function hideTypingIndicator() { typingIndicator.classList.add('hidden'); chatList.scrollTop = chatList.scrollHeight; }
+        function clearChat() { chats[currentChatId].messages = []; updateChatUI(); }
+        function openSettings() { document.getElementById('api-key-input').value = apiKey; document.getElementById('model-name-input').value = model; document.getElementById('settings-modal').classList.remove('hidden'); }
+        function closeSettings() { document.getElementById('settings-modal').classList.add('hidden'); }
+        function saveSettings() { apiKey = document.getElementById('api-key-input').value; model = document.getElementById('model-name-input').value; localStorage.setItem('pg_key', apiKey); localStorage.setItem('pg_model', model); closeSettings(); location.reload(); }
 
-        function showLoader() {
-            const loader = document.createElement('div');
-            loader.className = "flex justify-start";
-            loader.innerHTML = `<div class="bg-white p-4 rounded-xl border"><div class="typing-indicator"><span></span><span></span><span></span></div></div>`;
-            chatBox.appendChild(loader);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return loader;
-        }
-
-        userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } });
-        document.getElementById('sendBtn').onclick = () => sendMessage();
-        function openSettings() { document.getElementById('modal').style.display = 'flex'; document.getElementById('keyInput').value = apiKey; }
-        function closeSettings() { document.getElementById('modal').style.display = 'none'; }
-        function saveSettings() {
-            apiKey = document.getElementById('keyInput').value;
-            model = document.getElementById('modelInput').value;
-            localStorage.setItem('pg_key', apiKey);
-            localStorage.setItem('pg_model', model);
-            closeSettings();
-        }
+        userInput.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); } });
+        sendBtn.onclick = handleSend;
+        document.getElementById('mic-btn').onclick = () => alert('Beta, अभी माइक्रोफ़ोन टेस्टिंग के लिए है! (अगले वर्ज़न में सक्रिय होगा)');
 
         window.onload = init;
     </script>
