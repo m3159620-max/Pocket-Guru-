@@ -3,80 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>पॉकेट गुरु | Official</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>पॉकेट गुरु | Final Live</title>
+    <title>पॉकेट गुरु | Final Fix</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .bubble { max-width: 85%; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; font-size: 14px; line-height: 1.4; position: relative; }
-        .bubble.user { background-color: #dcf8c6; align-self: flex-end; border-top-right-radius: 2px; border: 1px solid #c1e0a3; }
-        .bubble.ai { background-color: #ffffff; align-self: flex-start; border-top-left-radius: 2px; border: 1px solid #e2e8f0; }
-        .sidebar-active { background-color: #2563eb !important; color: white !important; }
-        .markdown-body p { margin-bottom: 4px; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .typing-dot { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: bounce 1.4s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        body { background-color: #f0f2f5; height: 100vh; display: flex; overflow: hidden; font-family: sans-serif; }
+        .bubble { max-width: 80%; padding: 12px; border-radius: 15px; margin-bottom: 10px; font-size: 15px; line-height: 1.5; }
+        .bubble.user { background-color: #007bff; color: white; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .bubble.ai { background-color: white; color: #333; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #ddd; }
+        #chat-box { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; background: #efeae2; }
+        .sidebar { w-64; background: #111b21; color: white; display: flex; flex-direction: column; border-right: 1px solid #222; }
+        @media (max-width: 768px) { .sidebar { display: none; } }
     </style>
 </head>
-<body class="bg-[#f0f2f5] h-screen flex overflow-hidden font-sans">
+<body>
 
-    <aside class="w-64 bg-[#111b21] text-slate-300 flex flex-col border-r border-slate-700 hidden md:flex">
-        <div class="p-4 border-b border-slate-700 flex items-center justify-between bg-[#202c33]">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-graduation-cap text-blue-400 text-xl"></i>
-                <span class="font-bold text-white text-sm tracking-widest uppercase">पॉकेट गुरु</span>
+    <aside class="sidebar w-64 hidden md:flex">
+        <div class="p-4 bg-[#202c33] flex items-center gap-2 border-b border-slate-700">
+            <i class="fa-solid fa-graduation-cap text-blue-400"></i>
+            <span class="font-bold uppercase tracking-wider text-sm">पॉकेट गुरु</span>
+        </div>
+        <div id="history-list" class="flex-1 overflow-y-auto p-2">
             </div>
-            <button onclick="createNewChat()" class="text-white hover:text-blue-400 transition"><i class="fa-solid fa-plus-circle text-xl"></i></button>
-        </div>
-        <div id="history-list" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
-        <div class="p-3 bg-[#202c33] border-t border-slate-700 text-center">
-            <span class="text-[10px] text-slate-500 font-bold uppercase">System Active</span>
-        </div>
+        <div class="p-4 text-center text-[10px] text-slate-500 border-t border-slate-700">SYSTEM ACTIVE</div>
     </aside>
 
-    <main class="flex-1 flex flex-col relative bg-[#efeae2]">
-        <header class="bg-white border-b p-3 flex justify-between items-center shadow-sm z-10">
+    <main class="flex-1 flex flex-col relative">
+        <header class="bg-white p-3 border-b flex justify-between items-center shadow-sm">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center border border-blue-200">
-                    <i class="fa-solid fa-graduation-cap text-blue-600 text-lg"></i>
+                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white">
+                    <i class="fa-solid fa-robot"></i>
                 </div>
                 <div>
-                    <h1 class="font-bold text-slate-800 text-sm">पॉकेट गुरु</h1>
-                    <div class="flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                        <span class="text-[10px] text-green-600 font-bold uppercase">Online</span>
-                    </div>
+                    <h2 class="font-bold text-sm text-slate-800">पॉकेट गुरु</h2>
+                    <span class="text-[10px] text-green-500 font-bold uppercase">● Online</span>
                 </div>
             </div>
-            <button onclick="clearMessages()" class="text-[10px] bg-slate-100 px-3 py-1 rounded-full text-slate-500 hover:text-red-500 transition font-bold uppercase">
-                <i class="fa-solid fa-broom"></i> Clear
-            </button>
+            <button onclick="window.location.reload()" class="text-xs bg-slate-100 px-3 py-1 rounded-full text-slate-500 hover:bg-red-50 transition">Reset</button>
         </header>
 
-        <div id="chat-box" class="flex-1 overflow-y-auto p-4 flex flex-col pb-32"></div>
-
-        <div id="loader" class="hidden absolute bottom-24 left-6 z-20">
-            <div class="bg-white px-4 py-2 rounded-full border shadow-sm flex gap-1 items-center shadow-md">
-                <div class="typing-dot"></div>
-                <div class="typing-dot" style="animation-delay: 0.2s"></div>
-                <div class="typing-dot" style="animation-delay: 0.4s"></div>
+        <div id="chat-box">
             </div>
-        </div>
 
-        <div class="absolute bottom-0 w-full p-4 bg-white/80 backdrop-blur-md border-t">
+        <div class="p-4 bg-white border-t">
             <div class="max-w-4xl mx-auto flex items-center gap-2">
-                <div class="flex-1 bg-white rounded-xl border border-slate-200 shadow-sm px-4 flex items-center">
-                    <input type="text" id="user-input" class="w-full py-3 outline-none text-sm bg-transparent" placeholder="पूछो बेटा, क्या सीखना है?">
-                </div>
-                <button id="send-btn" class="bg-blue-600 text-white w-12 h-11 rounded-xl hover:bg-blue-700 flex items-center justify-center shadow-lg active:scale-90 transition-all">
+                <input type="text" id="user-input" class="flex-1 border rounded-xl px-4 py-3 outline-none focus:border-blue-500" placeholder="पूछो बेटा, क्या सीखना है?">
+                <button id="send-btn" class="bg-blue-600 text-white w-12 h-12 rounded-xl hover:bg-blue-700 transition flex items-center justify-center shadow-md">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
@@ -84,338 +57,59 @@
     </main>
 
     <script>
-        // FINAL API KEY INJECTED HERE (TUNE JO DI THI)
         const API_KEY = "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 
-"; 
+";
         const MODEL = "google/gemini-2.0-flash-lite-preview-02-05:free";
+        const chatBox = document.getElementById('chat-box');
+        const userInput = document.getElementById('user-input');
 
-        let memories = JSON.parse(localStorage.getItem('pg_final_live')) || {};
-        let activeId = localStorage.getItem('pg_final_live_id') || '';
-
-        function init() {
-            if (!activeId || !memories[activeId]) createNewChat();
-            renderSidebar();
-            renderMessages();
-        }
-
-        function createNewChat() {
-            const id = 'c_' + Date.now();
-            memories[id] = { id, title: "नयी बातचीत", messages: [] };
-            activeId = id;
-            save();
-        }
-
-        function save() {
-            localStorage.setItem('pg_final_live', JSON.stringify(memories));
-            localStorage.setItem('pg_final_live_id', activeId);
-            renderSidebar();
-        }
-
-        function renderSidebar() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            Object.values(memories).reverse().forEach(chat => {
-                const div = document.createElement('div');
-                div.className = `p-3 rounded-lg cursor-pointer flex justify-between items-center group mb-1 transition text-sm ${chat.id === activeId ? 'sidebar-active shadow-md' : 'hover:bg-[#202c33]'}`;
-                div.innerHTML = `<div class="truncate flex-1" onclick="switchChat('${chat.id}')"><i class="fa-regular fa-comment mr-2"></i>${chat.title}</div>
-                                 <i onclick="deleteChat('${chat.id}')" class="fa-solid fa-trash text-[10px] opacity-0 group-hover:opacity-100 hover:text-red-400 p-1"></i>`;
-                list.appendChild(div);
-            });
-        }
-
-        async function handleSend() {
-            const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            if (!text) return;
-
-            if (memories[activeId].messages.length === 0) memories[activeId].title = text.substring(0, 15);
-            
-            appendMsg('user', text);
-            memories[activeId].messages.push({ role: 'user', content: text });
-            input.value = '';
-            
-            document.getElementById('loader').classList.remove('hidden');
-            const box = document.getElementById('chat-box');
-            box.scrollTop = box.scrollHeight;
-
-            try {
-                const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
-                    method: "POST",
-                    headers: { 
-                        "Authorization": `Bearer ${API_KEY}`, 
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": window.location.origin
-                    },
-                    body: JSON.stringify({
-                        model: MODEL,
-                        messages: [{ role: "system", content: "You are Pocket Guru. Reply in Hindi/Hinglish. Call user 'Beta'." }, ...memories[activeId].messages]
-                    })
-                });
-                const data = await res.json();
-                document.getElementById('loader').classList.add('hidden');
-                
-                if (data.choices && data.choices.length > 0) {
-                    const reply = data.choices[0].message.content;
-                    appendMsg('ai', reply);
-                    memories[activeId].messages.push({ role: 'ai', content: reply });
-                    save();
-                } else {
-                    throw new Error("No response from API");
-                }
-            } catch (err) {
-                document.getElementById('loader').classList.add('hidden');
-                appendMsg('ai', "❌ Beta, network error ya API issue hai.");
-            }
-        }
+        // Welcome Message
+        window.onload = () => {
+            appendMsg('ai', "नमस्ते बेटा! 🙏 मैं हूँ आपका **पॉकेट गुरु**। आज आपको क्या पढ़ना है? गणित, विज्ञान या कुछ और?");
+        };
 
         function appendMsg(role, content) {
-            const box = document.getElementById('chat-box');
-            const wrap = document.createElement('div');
-            wrap.className = `flex flex-col ${role === 'user' ? 'items-end' : 'items-start'} mb-3`;
-            wrap.innerHTML = `<div class="bubble ${role === 'user' ? 'user' : 'ai markdown-body'}">${role === 'ai' ? marked.parse(content) : content}</div>`;
-            box.appendChild(wrap);
-            box.scrollTop = box.scrollHeight;
+            const div = document.createElement('div');
+            div.className = `bubble ${role === 'user' ? 'user' : 'ai'}`;
+            div.innerHTML = role === 'ai' ? marked.parse(content) : content;
+            chatBox.appendChild(div);
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
 
-        function switchChat(id) { activeId = id; save(); renderMessages(); }
-        function deleteChat(id) { delete memories[id]; if (activeId === id) createNewChat(); else save(); }
-        function clearMessages() { memories[activeId].messages = []; save(); renderMessages(); }
-        function renderMessages() {
-            document.getElementById('chat-box').innerHTML = '';
-            appendMsg('ai', "नमस्ते बेटा! 🙏 क्या पढ़ना है?");
-            if (memories[activeId]) memories[activeId].messages.forEach(m => appendMsg(m.role, m.content));
-        }
-
-        document.getElementById('send-btn').onclick = handleSend;
-        
-        // ENTER KEY 100% FIXED
-        document.getElementById('user-input').onkeydown = (e) => { 
-            if(e.key === 'Enter') {
-                e.preventDefault();
-                handleSend(); 
-            }
-        };
-        
-        window.onload = init;
-    </script>
-</body>
-</html>.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .bubble { max-width: 85%; padding: 10px 14px; border-radius: 12px; margin-bottom: 8px; font-size: 14px; line-height: 1.4; position: relative; }
-        .bubble.user { background-color: #dcf8c6; align-self: flex-end; border-top-right-radius: 2px; border: 1px solid #c1e0a3; }
-        .bubble.ai { background-color: #ffffff; align-self: flex-start; border-top-left-radius: 2px; border: 1px solid #e2e8f0; }
-        .sidebar-active { background-color: #2563eb !important; color: white !important; }
-        .markdown-body p { margin-bottom: 4px; }
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .typing-dot { width: 6px; height: 6px; background: #3b82f6; border-radius: 50%; animation: bounce 1.4s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
-    </style>
-</head>
-<body class="bg-[#f0f2f5] h-screen flex overflow-hidden font-sans">
-
-    <aside class="w-64 bg-[#111b21] text-slate-300 flex flex-col border-r border-slate-700 hidden md:flex">
-        <div class="p-4 border-b border-slate-700 flex items-center justify-between bg-[#202c33]">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-graduation-cap text-blue-400 text-xl"></i>
-                <span class="font-bold text-white text-sm tracking-widest uppercase">पॉकेट गुरु</span>
-            </div>
-            <button onclick="createNewChat()" class="text-white hover:text-blue-400 transition"><i class="fa-solid fa-plus-circle text-xl"></i></button>
-        </div>
-        
-        <div id="history-list" class="flex-1 overflow-y-auto p-2 space-y-1"></div>
-
-        <div class="p-3 bg-[#202c33] border-t border-slate-700">
-            <button onclick="askForKey()" class="w-full text-[10px] text-slate-500 hover:text-white transition flex items-center justify-center gap-2">
-                <i class="fa-solid fa-key"></i> UPDATE API KEY
-            </button>
-        </div>
-    </aside>
-
-    <main class="flex-1 flex flex-col relative bg-[#efeae2]">
-        <header class="bg-white border-b p-3 flex justify-between items-center shadow-sm z-10">
-            <div class="flex items-center gap-3">
-                <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center border border-blue-200">
-                    <i class="fa-solid fa-graduation-cap text-blue-600 text-lg"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-slate-800 text-sm">पॉकेट गुरु</h1>
-                    <div class="flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                        <span class="text-[10px] text-green-600 font-bold uppercase">Active</span>
-                    </div>
-                </div>
-            </div>
-            <div class="flex gap-2">
-                <button onclick="clearMessages()" class="text-[10px] bg-slate-100 px-3 py-1 rounded-full text-slate-500 hover:text-red-500 transition font-bold uppercase">
-                    <i class="fa-solid fa-broom"></i> Clear
-                </button>
-            </div>
-        </header>
-
-        <div id="chat-box" class="flex-1 overflow-y-auto p-4 flex flex-col pb-32"></div>
-
-        <div id="loader" class="hidden absolute bottom-24 left-6 z-20">
-            <div class="bg-white px-4 py-2 rounded-full border shadow-sm flex gap-1 items-center">
-                <div class="typing-dot"></div>
-                <div class="typing-dot" style="animation-delay: 0.2s"></div>
-                <div class="typing-dot" style="animation-delay: 0.4s"></div>
-            </div>
-        </div>
-
-        <div class="absolute bottom-0 w-full p-4 bg-white/80 backdrop-blur-md border-t">
-            <div class="max-w-4xl mx-auto flex items-center gap-2">
-                <div class="flex-1 bg-white rounded-xl border border-slate-200 shadow-sm px-4 flex items-center">
-                    <textarea id="user-input" rows="1" class="w-full py-3 outline-none resize-none text-sm bg-transparent" placeholder="पूछो बेटा, क्या सीखना है?"></textarea>
-                </div>
-                <button id="send-btn" class="bg-blue-600 text-white w-12 h-11 rounded-xl hover:bg-blue-700 flex items-center justify-center shadow-lg active:scale-90 transition-all">
-                    <i class="fa-solid fa-paper-plane"></i>
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <script>
-        // ==========================================================
-        // ⚠️ YAHA KEY DALO AGAR DIRECT CHALANA HAI ⚠️
-        // ==========================================================
-        let API_KEY = "sk-or-v1-YAHAN_APNI_KEY_DALO"; 
-        const MODEL = "google/gemini-2.0-flash-lite-preview-02-05:free";
-        // ==========================================================
-
-        let memories = JSON.parse(localStorage.getItem('pg_v5_store')) || {};
-        let activeId = localStorage.getItem('pg_v5_active') || '';
-
-        function init() {
-            // Agar code mein key nahi hai, toh local storage check karo
-            if (API_KEY.includes("YAHAN")) {
-                const stored = localStorage.getItem('pg_user_key');
-                if (stored) API_KEY = stored;
-            }
-            if (!activeId || !memories[activeId]) createNewChat();
-            renderSidebar();
-            renderMessages();
-        }
-
-        function askForKey() {
-            const k = prompt("Enter your OpenRouter API Key:");
-            if (k) {
-                API_KEY = k;
-                localStorage.setItem('pg_user_key', k);
-                alert("Key Saved!");
-            }
-        }
-
-        function createNewChat() {
-            const id = 'c_' + Date.now();
-            memories[id] = { id, title: "नयी बातचीत", messages: [] };
-            activeId = id;
-            save();
-        }
-
-        function save() {
-            localStorage.setItem('pg_v5_store', JSON.stringify(memories));
-            localStorage.setItem('pg_v5_active', activeId);
-            renderSidebar();
-        }
-
-        function renderSidebar() {
-            const list = document.getElementById('history-list');
-            list.innerHTML = '';
-            Object.values(memories).reverse().forEach(chat => {
-                const div = document.createElement('div');
-                div.className = `p-3 rounded-lg cursor-pointer flex justify-between items-center group mb-1 transition text-sm ${chat.id === activeId ? 'sidebar-active shadow-md' : 'hover:bg-[#202c33]'}`;
-                div.innerHTML = `<div class="truncate flex-1" onclick="switchChat('${chat.id}')"><i class="fa-regular fa-comment mr-2"></i>${chat.title}</div>
-                                 <i onclick="deleteChat('${chat.id}')" class="fa-solid fa-trash text-[10px] opacity-0 group-hover:opacity-100 hover:text-red-400 p-1"></i>`;
-                list.appendChild(div);
-            });
-        }
-
-        async function handleSend() {
-            const input = document.getElementById('user-input');
-            const text = input.value.trim();
-            
+        async function sendMessage() {
+            const text = userInput.value.trim();
             if (!text) return;
-            
-            if (API_KEY.includes("YAHAN")) {
-                askForKey();
-                return;
-            }
-
-            if (memories[activeId].messages.length === 0) {
-                memories[activeId].title = text.substring(0, 18);
-            }
 
             appendMsg('user', text);
-            memories[activeId].messages.push({ role: 'user', content: text });
-            input.value = '';
-            
-            document.getElementById('loader').classList.remove('hidden');
-            const box = document.getElementById('chat-box');
-            box.scrollTop = box.scrollHeight;
+            userInput.value = '';
 
             try {
-                const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+                const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
                     method: "POST",
-                    headers: { 
-                        "Authorization": `Bearer ${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 
-}`,
-                        "Content-Type": "application/json",
-                        "HTTP-Referer": window.location.origin
+                    headers: {
+                        "Authorization": `Bearer ${API_KEY}`,
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         model: MODEL,
                         messages: [
-                            { role: "system", content: "You are Pocket Guru, an expert teacher. Reply in Hindi/Hinglish. Call the user 'Beta'." },
-                            ...memories[activeId].messages
+                            { role: "system", content: "You are Pocket Guru, a helpful AI tutor for students. Speak in Hindi/Hinglish and always call the user 'Beta'." },
+                            { role: "user", content: text }
                         ]
                     })
                 });
 
-                const data = await res.json();
-                document.getElementById('loader').classList.add('hidden');
+                const data = await response.json();
+                const reply = data.choices[0].message.content;
+                appendMsg('ai', reply);
 
-                if (data.choices && data.choices[0]) {
-                    const reply = data.choices[0].message.content;
-                    appendMsg('ai', reply);
-                    memories[activeId].messages.push({ role: 'ai', content: reply });
-                    save();
-                } else {
-                    throw new Error(data.error?.message || "API Error");
-                }
-            } catch (err) {
-                document.getElementById('loader').classList.add('hidden');
-                appendMsg('ai', "❌ Beta, API key galat hai ya net nahi chal raha. Sidebar ke niche 'UPDATE API KEY' par click karke sahi key daalo.");
+            } catch (error) {
+                appendMsg('ai', "❌ Sorry Beta, lagta hai internet ya API mein koi dikat hai.");
             }
         }
 
-        function appendMsg(role, content) {
-            const box = document.getElementById('chat-box');
-            const wrap = document.createElement('div');
-            wrap.className = `flex flex-col ${role === 'user' ? 'items-end' : 'items-start'} mb-3`;
-            const icon = role === 'user' ? 'fa-user-graduate text-green-600' : 'fa-graduation-cap text-blue-600';
-            wrap.innerHTML = `<i class="fa-solid ${icon} text-[9px] mb-1 px-1 opacity-60"></i>
-                              <div class="bubble ${role === 'user' ? 'user' : 'ai markdown-body'}">${role === 'ai' ? marked.parse(content) : content}</div>`;
-            box.appendChild(wrap);
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function switchChat(id) { activeId = id; save(); renderMessages(); }
-        function deleteChat(id) { delete memories[id]; if (activeId === id) createNewChat(); else save(); }
-        function clearMessages() { memories[activeId].messages = []; save(); renderMessages(); }
-        
-        function renderMessages() {
-            document.getElementById('chat-box').innerHTML = '';
-            appendMsg('ai', "नमस्ते बेटा! 🙏 मैं **पॉकेट गुरु** हूँ। आज क्या पढ़ना है?");
-            if (memories[activeId]) {
-                memories[activeId].messages.forEach(m => appendMsg(m.role, m.content));
-            }
-        }
-
-        document.getElementById('send-btn').onclick = handleSend;
-        document.getElementById('user-input').onkeydown = (e) => { if(e.key==='Enter' && !e.shiftKey){ e.preventDefault(); handleSend(); } };
-        window.onload = init;
+        document.getElementById('send-btn').onclick = sendMessage;
+        userInput.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(); };
     </script>
 </body>
 </html>
